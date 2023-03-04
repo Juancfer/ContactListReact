@@ -9,29 +9,24 @@ const contactList = React.memo(() => {
 
   const [contactList, setContactList] = React.useState([]);
   const [newContact, setNewContact] = React.useState({ name: "", lastname: "",  phone: "", imageUrl: "" });
-  const [total, setTotal] = React.useState(0);
   const [filter, setFilter] = React.useState(""); 
-
-  React.useEffect(() => {
-    const sum = contactList.reduce((acum, contact) => contact.id ? acum + 1 : acum, 0);
-    setTotal(sum);
-  }, [contactList]);
+  const [filterWithTime] = useDebounce(filter, 1000);
 
   React.useEffect(() => {
     getAllContactsFromApi();
   }, []);
 
-  const [filterWithTime] = useDebounce(filter, 1000);
 
-React.useEffect(() => {
 
-  fetch(`${API_URL}?q=${filterWithTime}`)
-    .then((response) => response.json())
-    .then((data) => {
-      setContactList(data);
-    });
+  React.useEffect(() => {
 
-}, [filterWithTime]);
+    fetch(`${API_URL}?q=${filterWithTime}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setContactList(data);
+      });
+
+  }, [filterWithTime]);
 
   const getAllContactsFromApi = () => {
     fetch(API_URL)
@@ -71,7 +66,7 @@ React.useEffect(() => {
 
   return (
     <div className="contact-linst">
-      <h2>Mi agenda ({total})</h2>
+      <h2>Mi agenda ({contactList.length})</h2>
 
 
       {contactList.map(contact =>
